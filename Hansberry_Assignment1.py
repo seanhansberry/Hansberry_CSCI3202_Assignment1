@@ -50,7 +50,7 @@ def main(argv):
 
 
 
-
+	#insure graph is working
 	myGraph = graph()
 	for x in range(0,10):
 		myGraph.addVertex(x)
