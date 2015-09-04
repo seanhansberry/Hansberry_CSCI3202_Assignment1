@@ -7,56 +7,85 @@ import Queue
 def main(argv):
 	#insure queue is working
 	myQueue = Queue.Queue(0)
-	myQueue.put(3)
-	myQueue.put(4)
-	print(myQueue.get())
-	x = 0
-	x=myQueue.qsize()
-	print(x)
+	for x in range(0,10):
+		myQueue.put(x)
+	print 'Queue size is: ', myQueue.qsize()
+	for x in range(0,10):
+		print 'Dequeuing item: ', myQueue.get()
 	
 	
 	#insure stack class is working
 	cStack=myStack()
-	cStack.push(10)
-	cStack.push(20)
-	cStack.push(30)
+	for x in range(0,10):
+		cStack.push(x)
+
+	print 'Number of items in stack: ', cStack.checkSize()
 	
-	cStack.checkSize()
-	cStack.pop()
-	cStack.checkSize()
+	for x in range(0,10):
+		print 'Poping item from stack: ', cStack.attr1.pop()
 	
+	#insure Binary tree class is working
 	rootNode = Node(0)
 	myTree = binaryTree(rootNode)
-	myTree.add(15, 0)
-	myTree.add(10,15)
-	myTree.add(20, 20)
-	
-	myTree.delete(100)
-	myTree.delete(0)
-	myTree.delete(10)
+	myTree.add(10,0)
+	myTree.add(9,0)
+	myTree.add(8,9)
+	myTree.add(7,8)
+	myTree.add(6,8)
+	myTree.add(5,7)
+	myTree.add(4,6)
+	myTree.add(3,5)
+	myTree.add(2,5)
+	myTree.add(1,3)
 
+
+	print 'Tree before delete'
+	myTree.preOrder(rootNode)
+
+	myTree.delete(1)
+	myTree.delete(4)
+
+	print 'Tree after delete'
 	myTree.preOrder(rootNode)
 
 
-	myGraph = graph()
-	myGraph.addVertex(1)
-	myGraph.addVertex(2)
-	myGraph.addVertex(4)
-	myGraph.addVertex(1)
 
-	myGraph.addEdge(1,2)
-	myGraph.addEdge(4,0)
-	myGraph.addEdge(99,99)
-	myGraph.addEdge(2,4)
-	myGraph.addVertex(25)
-	myGraph.findVertex(2)
-	myGraph.findVertex(12)
+
+	myGraph = graph()
+	for x in range(0,10):
+		myGraph.addVertex(x)
+
+	myGraph.addEdge(0, 1)
+	myGraph.addEdge(0, 2)
+	myGraph.addEdge(0, 3)
+	myGraph.addEdge(1, 4)
+	myGraph.addEdge(1, 5)
+	myGraph.addEdge(1, 6)
+	myGraph.addEdge(2, 7)
+	myGraph.addEdge(2, 8)
+	myGraph.addEdge(2, 9)
+	myGraph.addEdge(2, 3)
+	myGraph.addEdge(3, 4)
+	myGraph.addEdge(3, 5)
+	myGraph.addEdge(3, 6)
+	myGraph.addEdge(3, 7)
+	myGraph.addEdge(3, 8)
+	myGraph.addEdge(3, 9)
+	myGraph.addEdge(4, 5)
+	myGraph.addEdge(4, 6)
+	myGraph.addEdge(4, 7)
+	myGraph.addEdge(4, 8)
+
+	print 'After edges added graph is'
+	print myGraph.key
+
+	for x in range(0,5):
+		myGraph.findVertex(x)
 
 	return
 
 
 class myStack():
-	attr1 = 0
 	def __init__ (self):
 		self.attr1 = []
 	
@@ -67,7 +96,7 @@ class myStack():
 		self.attr1.pop()
 	
 	def checkSize(self):
-		print(len(self.attr1))
+		return len(self.attr1)
 		
 		
 		
@@ -82,40 +111,55 @@ class binaryTree():
 	
 	def __init__(self, root_node):
 		self.root = root_node
-		
-	def add(self, value, parentValue, node = None):
-		print(self.root.integerKey)
-		print(parentValue)
-
+		self.nodeFound = False
+	
+	def add(self, value, parentValue):
 		node = self.root
-
+		self.nodeFound = False
+		self.addRec(value, parentValue, node)
+		if self.nodeFound == False:
+			print 'Node not found'
+	def addRec(self, value, parentValue, node):
+		
+		if node == None:
+			return
 
 		while node:
 			if node.integerKey == parentValue:
 				#found value try to add to tree
+				self.nodeFound = True
 				if node.lChild == None:
 					node.lChild = Node(value, node)
-					break
+					return
 				elif node.rChild == None:
 					node.rChild = Node(value, node)
-					break
+					return
 				else:
 					print("Parent has two children, node not added")
-					break
+					return
 			#Node value not found yet
 			else:
-				if node.lChild is not None:
-					node = node.lChild
-				elif node.rChild is not None:
-					node = node.rChild
-				else:
-					print("Parent not found")
-					break
+				self.addRec(value, parentValue, node.lChild)
+				self.addRec(value, parentValue, node.rChild)
+				return
+					
 
-	def delete(self, value):
+
+	def delete(self, value, node = None):
 		node = self.root
+		self.nodeFound = False
+		self.deleteRec(value, node)
+		if self.nodeFound == False:
+			print 'Node not found'
+	
+	def deleteRec(self, value, node):
+		
+		if node == None:
+			return
+		
 		while node:
 			if node.integerKey == value:
+				self.nodeFound = True
 				if node.lChild is not None:
 					print("Node not deleted, has children")
 					break
@@ -123,17 +167,18 @@ class binaryTree():
 					print("Node not deleted, has children")
 					break
 				else:
-					node = None
+					if node.parent.lChild == node:
+						node.parent.lChild = None
+					elif node.parent.rChild == node:
+						node.parent.rChild = None  
 					print 'Node at value', value ,'deleted'
 					break
 			else:
-				if node.lChild is not None:
-					node = node.lChild
-				elif node.rChild is not None:
-					node = node.rChild
-				else:
-					print("Node not found")
-					break
+				self.deleteRec(value, node.lChild)
+				self.deleteRec(value, node.rChild)
+				return
+			
+			
 
 	def preOrder(self, node):
 		if node != None:
@@ -160,7 +205,7 @@ class graph():
 			#self.key[value]=None
 			self.key[value] = []
 
-			print'added value:', value, 'List is: ', self.key
+			print'Added value:', value, '|| List is: ', self.key
 
 
 	def addEdge(self, value1, value2):
